@@ -2,5 +2,11 @@
   "previewPort": 3000,
   "healthPath": "/",
   "startCommand": "docker compose -f docker-compose.base44.yml up -d",
-  "secrets": []
+  "secrets": [
+    {
+      "name": "OPENAI_API_KEY",
+      "description": "Chave da API OpenAI para respostas automáticas às mensagens. Obter em platform.openai.com/api-keys; requer saldo disponível.",
+      "requiredAtBoot": false
+    }
+  ]
 }

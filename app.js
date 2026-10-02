@@ -1,4 +1,12 @@
+import { createHistoryForm } from './patient-history.js';
+import { openPatientProfile, openDoctorProfile } from './profiles.js';
+import { setupAgenda } from './agenda.js';
+import { setupMessages } from './messages.js';
+
 const $ = id => document.getElementById(id);
+let refreshAgenda;
+const bookingHistory = createHistoryForm('booking', document.querySelector('#appointments .form'));
+const walkinHistory = createHistoryForm('walkin', document.querySelector('#walkins .form'));
 let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
 let patients = JSON.parse(localStorage.getItem('patients')) || [];
 let walkins = JSON.parse(localStorage.getItem('walkins')) || [];
@@ -21,6 +29,7 @@ function save() {
   for (const [key, value] of Object.entries({ appointments, patients, walkins, doctors })) {
     localStorage.setItem(key, JSON.stringify(value));
   }
+  refreshAgenda?.();
 }
 let toastTimer;
 function toast(message) {
@@ -42,11 +51,12 @@ function renderDoctors() {
   doctors.forEach((doctor, index) => {
     const div = document.createElement('div');
     div.className = 'doctor-card';
-    div.innerHTML = `<div class="doctor-info"><strong>${escapeHtml(doctor.name)}</strong>
+    div.innerHTML = `<button class="doctor-info profile-link" aria-label="Ver perfil de ${escapeHtml(doctor.name)}"><strong>${escapeHtml(doctor.name)}</strong>
       <div class="small">${escapeHtml(doctor.specialty || 'Especialidade não indicada')}</div>
-      <div class="small">${escapeHtml(doctor.phone || 'Sem telefone')}${doctor.email ? ' · ' + escapeHtml(doctor.email) : ''}</div></div>
+      <div class="small">${escapeHtml(doctor.phone || 'Sem telefone')}${doctor.email ? ' · ' + escapeHtml(doctor.email) : ''}</div></button>
       <button class="btn danger">Excluir</button>`;
-    div.querySelector('button').addEventListener('click', () => {
+    div.querySelector('.profile-link').addEventListener('click', () => openDoctorProfile(doctor, appointments));
+    div.querySelector('.danger').addEventListener('click', () => {
       if (!confirm('Tem a certeza que deseja excluir este médico?')) return;
       doctors.splice(index, 1);
       save(); renderDoctors(); toast('Médico excluído.');
@@ -66,12 +76,14 @@ $('addDoctor').addEventListener('click', () => {
   toast('Médico adicionado.');
 });
 
-function addOrUpdatePatient(name, phone) {
+function addOrUpdatePatient(name, phone, history) {
   name = name.trim(); phone = phone.trim();
   if (!name) return;
   const existing = patients.find(p => p.name.toLowerCase() === name.toLowerCase());
-  if (existing) { if (phone) existing.phone = phone; }
-  else patients.push({ name, phone });
+  if (existing) {
+    if (phone) existing.phone = phone;
+    if (history) existing.history = history;
+  } else patients.push({ name, phone, history });
   save(); renderPatients(); updateDashboard();
 }
 function filterPatients() {
@@ -85,10 +97,11 @@ function renderPatients() {
   patients.forEach((patient, index) => {
     const div = document.createElement('div');
     div.className = 'patient';
-    div.innerHTML = `<div class="patient-info"><div class="avatar">${escapeHtml(patient.name.charAt(0).toUpperCase())}</div>
-      <div><strong>${escapeHtml(patient.name)}</strong><div class="small">📞 ${escapeHtml(patient.phone || 'Sem telefone')}</div></div></div>
+    div.innerHTML = `<button class="patient-info profile-link" aria-label="Ver perfil de ${escapeHtml(patient.name)}"><span class="avatar">${escapeHtml(patient.name.charAt(0).toUpperCase())}</span>
+      <span><strong>${escapeHtml(patient.name)}</strong><span class="small" style="display:block">📞 ${escapeHtml(patient.phone || 'Sem telefone')}</span></span></button>
       <button class="btn danger">Excluir</button>`;
-    div.querySelector('button').addEventListener('click', () => {
+    div.querySelector('.profile-link').addEventListener('click', () => openPatientProfile(patient, appointments, walkins));
+    div.querySelector('.danger').addEventListener('click', () => {
       if (!confirm('Tem a certeza que deseja excluir este paciente?')) return;
       patients.splice(index, 1);
       save(); renderPatients(); updateDashboard(); toast('Paciente excluído.');
@@ -98,6 +111,12 @@ function renderPatients() {
   filterPatients();
 }
 $('patientSearch').addEventListener('input', filterPatients);
+for (const [nameId, historyForm] of [['newName', bookingHistory], ['walkName', walkinHistory]]) {
+  $(nameId).addEventListener('change', () => {
+    const patient = patients.find(p => p.name.toLowerCase() === $(nameId).value.trim().toLowerCase());
+    historyForm.fill(patient?.history);
+  });
+}
 
 $('book').addEventListener('click', () => {
   const name = $('newName').value.trim();
@@ -107,10 +126,13 @@ $('book').addEventListener('click', () => {
   if (!name) return toast('Preencha o nome do paciente.');
   if (!date) return toast('Selecione a data.');
   if (!time) return toast('Selecione a hora.');
-  appointments.push({ id: Date.now(), name, phone, date, time, type: $('newType').value || 'Consulta', doctor: $('newDoctor').value || '—', notes: $('newNotes').value.trim(), status: 'Agendada' });
-  addOrUpdatePatient(name, phone);
+  let history;
+  try { history = bookingHistory.read(); } catch (error) { return toast(error.message); }
+  appointments.push({ id: Date.now(), name, phone, date, time, type: $('newType').value || 'Consulta', doctor: $('newDoctor').value || '—', notes: $('newNotes').value.trim(), status: 'Agendada', history });
+  addOrUpdatePatient(name, phone, history);
   save(); renderAppointments(); updateDashboard();
   clearFields(['newName', 'newPhone', 'newDate', 'newTime', 'newType', 'newDoctor', 'newNotes']);
+  bookingHistory.fill(null);
   toast('Marcação criada com sucesso.'); showPage('dashboard');
 });
 function renderAppointments() {
@@ -132,10 +154,13 @@ function renderAppointments() {
 $('addWalkin').addEventListener('click', () => {
   const name = $('walkName').value.trim();
   if (!name) return toast('Preencha o nome do paciente.');
-  const walkin = { id: Date.now(), name, phone: $('walkPhone').value.trim(), time: $('walkTime').value || '—', date: $('walkDate').value || '—', reason: $('walkReason').value || '—', priority: $('walkPriority').value || 'Normal', status: $('walkStatus').value || 'A aguardar' };
-  walkins.push(walkin); addOrUpdatePatient(name, walkin.phone);
+  let history;
+  try { history = walkinHistory.read(); } catch (error) { return toast(error.message); }
+  const walkin = { id: Date.now(), name, phone: $('walkPhone').value.trim(), time: $('walkTime').value || '—', date: $('walkDate').value || '—', reason: $('walkReason').value || '—', priority: $('walkPriority').value || 'Normal', status: $('walkStatus').value || 'A aguardar', notes: $('walkNotes').value.trim(), history };
+  walkins.push(walkin); addOrUpdatePatient(name, walkin.phone, history);
   save(); renderWalkins(); updateDashboard();
   clearFields(['walkName', 'walkPhone', 'walkTime', 'walkDate', 'walkReason', 'walkPriority', 'walkStatus', 'walkNotes']);
+  walkinHistory.fill(null);
   toast('Walk-in adicionado à lista.');
 });
 function renderWalkins() {
@@ -159,6 +184,6 @@ function updateDashboard() {
   $('countWalkins').textContent = walkins.length;
   $('countPatients').textContent = patients.length;
 }
-// The supplied prototype simulates sending; no external delivery is configured.
-$('sendMessage').addEventListener('click', () => toast('Mensagem fictícia enviada.'));
+refreshAgenda = setupAgenda(() => appointments);
+setupMessages(toast);
 renderDoctors(); renderPatients(); renderAppointments(); renderWalkins(); updateDashboard();

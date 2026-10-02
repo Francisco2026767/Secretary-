@@ -33,14 +33,11 @@
       </div>
     </section>
     <section id="agenda" class="page">
-      <h1>Agenda</h1><div class="sub">Agenda semanal de demonstração</div>
-      <div class="panel"><div class="calendar">
-        <div class="day"><strong>Seg · 05</strong><div class="slot">09:00 · Inês Costa</div><div class="slot">10:15 · Beatriz Santos</div><div class="slot">14:00 · Pedro Lima</div></div>
-        <div class="day"><strong>Ter · 06</strong><div class="slot">09:30 · Rui Fernandes</div><div class="slot">11:00 · João Almeida</div><div class="slot">15:30 · Marta Silva</div></div>
-        <div class="day"><strong>Qua · 07</strong><div class="slot">08:45 · Sofia Gomes</div><div class="slot">13:30 · André Costa</div></div>
-        <div class="day"><strong>Qui · 08</strong><div class="slot">10:00 · Laura Pinto</div><div class="slot">14:30 · Tiago Alves</div></div>
-        <div class="day"><strong>Sex · 09</strong><div class="slot">09:00 · Consulta livre</div><div class="slot">11:30 · Miguel Rocha</div></div>
-      </div></div>
+      <h1>Agenda</h1><div class="sub">Agenda semanal · apenas consultas registadas</div>
+      <div class="panel">
+        <div class="agenda-controls"><button class="btn secondary" id="previousWeek">← Semana anterior</button><div class="field"><label for="agendaStart">Início da semana</label><input id="agendaStart" type="date" min="2026-10-02" value="2026-10-02"></div><button class="btn secondary" id="nextWeek">Semana seguinte →</button></div>
+        <div class="calendar" id="calendar"></div>
+      </div>
     </section>
     <section id="patients" class="page"><h1>Pacientes</h1><div class="sub">Base de dados fictícia</div><div class="panel"><input class="search" id="patientSearch" aria-label="Pesquisar pacientes" placeholder="Pesquisar por nome ou telefone..."><div id="patientList"></div></div></section>
     <section id="appointments" class="page">
@@ -70,9 +67,9 @@
       <div class="panel"><h2>Lista de Walk-ins</h2><div class="table-scroll"><table><thead><tr><th>Hora</th><th>Nome</th><th>Telefone</th><th>Motivo</th><th>Prioridade</th><th>Estado</th><th>Ação</th></tr></thead><tbody id="walkinList"></tbody></table></div></div>
     </section>
     <section id="messages" class="page">
-      <h1>Mensagens</h1><div class="sub">Comunicações administrativas fictícias</div>
-      <div class="panel"><div class="notice">Não introduza dados clínicos ou informações pessoais reais neste protótipo.</div><div class="table-scroll"><table><thead><tr><th>De</th><th>Assunto</th><th>Hora</th><th>Estado</th></tr></thead><tbody><tr><td colspan="4" class="empty">Nenhuma mensagem registada.</td></tr></tbody></table></div></div>
-      <div class="panel"><h2>Nova mensagem</h2><div class="field"><label for="messageRecipient">Destinatário</label><input id="messageRecipient" placeholder="Nome fictício"></div><br><div class="field"><label for="messageText">Mensagem</label><textarea id="messageText" placeholder="Escreva uma mensagem administrativa..."></textarea></div><br><button class="btn" id="sendMessage">Enviar</button></div>
+      <h1>Mensagens</h1><div class="sub">Respostas automáticas do assistente IA</div>
+      <div class="panel"><div class="notice">Utiliza apenas dados fictícios. Ao enviar, o destinatário e o texto são enviados ao serviço OpenAI para gerar uma resposta. Os perfis e antecedentes não são enviados. Não é enviado email ou SMS: a resposta é do assistente IA, não da pessoa indicada.</div><p class="small" id="aiStatus">A verificar configuração…</p><div id="messageList" aria-live="polite"></div></div>
+      <div class="panel"><h2>Nova mensagem</h2><div class="field"><label for="messageRecipient">Destinatário</label><input id="messageRecipient" maxlength="150" placeholder="Nome fictício"></div><br><div class="field"><label for="messageText">Mensagem</label><textarea id="messageText" maxlength="4000" placeholder="Escreva uma mensagem administrativa fictícia..."></textarea></div><br><button class="btn" id="sendMessage">Enviar e receber resposta</button><p id="messageError" class="message-error" role="alert"></p></div>
     </section>
     <section id="doctors" class="page">
       <h1>Médicos</h1><div class="sub">Adicionar e gerir profissionais</div>
@@ -86,6 +83,7 @@
     </section>
   </main>
 </div>
+<dialog id="profileDialog" class="profile-dialog" aria-labelledby="profileTitle"><div class="profile-heading"><h2 id="profileTitle">Perfil</h2><button class="btn secondary" id="closeProfile" aria-label="Fechar perfil">Fechar</button></div><div id="profileContent"></div></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script type="module" src="/app.js"></script>
 </body>

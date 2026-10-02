@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Clínica Horizonte — Secretariado</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header><div class="logo"><div class="logo-icon">✚</div>Clínica Horizonte</div><div class="user">Secretariado</div></header>
+<div class="layout">
+  <aside aria-label="Navegação principal">
+    <a href="#dashboard" class="nav active" data-page="dashboard" aria-label="Dashboard">🏠 <span>Dashboard</span></a>
+    <a href="#agenda" class="nav" data-page="agenda" aria-label="Agenda">📅 <span>Agenda</span></a>
+    <a href="#patients" class="nav" data-page="patients" aria-label="Pacientes">👥 <span>Pacientes</span></a>
+    <a href="#appointments" class="nav" data-page="appointments" aria-label="Marcar consulta">➕ <span>Marcar consulta</span></a>
+    <a href="#walkins" class="nav" data-page="walkins" aria-label="Walk-in">🚶 <span>Walk-in</span></a>
+    <a href="#messages" class="nav" data-page="messages" aria-label="Mensagens">✉️ <span>Mensagens</span></a>
+    <a href="#doctors" class="nav" data-page="doctors" aria-label="Médicos">🩺 <span>Médicos</span></a>
+  </aside>
+  <main id="app">
+    <section id="dashboard" class="page active">
+      <h1>Bom dia</h1><div class="sub">Resumo do consultório · <span id="date"></span></div>
+      <div class="cards">
+        <div class="card"><div class="label">Consultas hoje</div><div class="metric" id="countAppointments">0</div></div>
+        <div class="card"><div class="label">A aguardar</div><div class="metric" id="countWaiting">0</div></div>
+        <div class="card"><div class="label">Walk-ins</div><div class="metric" id="countWalkins">0</div></div>
+        <div class="card"><div class="label">Pacientes</div><div class="metric" id="countPatients">0</div></div>
+      </div>
+      <div class="grid">
+        <div class="panel"><h2>Consultas de hoje</h2><div class="table-scroll"><table><thead><tr><th>Hora</th><th>Paciente</th><th>Telefone</th><th>Tipo</th><th>Médico</th><th>Estado</th><th>Ação</th></tr></thead><tbody id="todayAppointments"></tbody></table></div></div>
+        <div class="panel"><h2>Ações rápidas</h2><div class="actions"><button class="btn" data-show="appointments">Nova consulta</button><button class="btn secondary" data-show="patients">Pacientes</button><button class="btn secondary" data-show="doctors">Médicos</button></div><br><div class="notice">ℹ️ Ambiente de demonstração. Utilize apenas dados fictícios.</div></div>
+      </div>
+    </section>
+    <section id="agenda" class="page">
+      <h1>Agenda</h1><div class="sub">Agenda semanal de demonstração</div>
+      <div class="panel"><div class="calendar">
+        <div class="day"><strong>Seg · 05</strong><div class="slot">09:00 · Inês Costa</div><div class="slot">10:15 · Beatriz Santos</div><div class="slot">14:00 · Pedro Lima</div></div>
+        <div class="day"><strong>Ter · 06</strong><div class="slot">09:30 · Rui Fernandes</div><div class="slot">11:00 · João Almeida</div><div class="slot">15:30 · Marta Silva</div></div>
+        <div class="day"><strong>Qua · 07</strong><div class="slot">08:45 · Sofia Gomes</div><div class="slot">13:30 · André Costa</div></div>
+        <div class="day"><strong>Qui · 08</strong><div class="slot">10:00 · Laura Pinto</div><div class="slot">14:30 · Tiago Alves</div></div>
+        <div class="day"><strong>Sex · 09</strong><div class="slot">09:00 · Consulta livre</div><div class="slot">11:30 · Miguel Rocha</div></div>
+      </div></div>
+    </section>
+    <section id="patients" class="page"><h1>Pacientes</h1><div class="sub">Base de dados fictícia</div><div class="panel"><input class="search" id="patientSearch" aria-label="Pesquisar pacientes" placeholder="Pesquisar por nome ou telefone..."><div id="patientList"></div></div></section>
+    <section id="appointments" class="page">
+      <h1>Marcar consulta</h1><div class="sub">Novo agendamento fictício</div>
+      <div class="panel"><div class="form">
+        <div class="field"><label for="newName">Nome do paciente</label><input id="newName" placeholder="Ex.: Ana Pereira"></div>
+        <div class="field"><label for="newPhone">Telefone</label><input id="newPhone" placeholder="+352 000 000 000"></div>
+        <div class="field"><label for="newDate">Data</label><input id="newDate" type="date"></div>
+        <div class="field"><label for="newTime">Hora</label><select id="newTime"><option value="">Selecionar hora</option><option>08:30</option><option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option><option>11:00</option><option>11:30</option><option>14:00</option><option>14:30</option><option>15:00</option><option>15:30</option><option>16:00</option><option>16:30</option></select></div>
+        <div class="field"><label for="newType">Tipo</label><select id="newType"><option value="">Selecionar tipo</option><option>Consulta</option><option>Seguimento</option><option>Primeira consulta</option></select></div>
+        <div class="field"><label for="newDoctor">Profissional</label><select id="newDoctor"><option value="">Selecionar profissional</option></select></div>
+        <div class="field full"><label for="newNotes">Observação administrativa</label><textarea id="newNotes" placeholder="Notas administrativas, sem dados clínicos reais."></textarea></div>
+      </div><br><button class="btn" id="book">Confirmar marcação</button></div>
+    </section>
+    <section id="walkins" class="page">
+      <h1>Pacientes Walk-in</h1><div class="sub">Registo de pacientes que chegaram sem marcação</div><div class="notice">Área de demonstração. Preencha apenas informações fictícias.</div>
+      <div class="panel"><h2>Novo Walk-in</h2><div class="form">
+        <div class="field"><label for="walkName">Nome do paciente</label><input id="walkName" placeholder="Preencher"></div>
+        <div class="field"><label for="walkPhone">Telefone</label><input id="walkPhone" placeholder="+352 000 000 000"></div>
+        <div class="field"><label for="walkTime">Hora de chegada</label><input id="walkTime" type="time"></div>
+        <div class="field"><label for="walkDate">Data</label><input id="walkDate" type="date"></div>
+        <div class="field"><label for="walkReason">Motivo administrativo</label><input id="walkReason" placeholder="Preencher"></div>
+        <div class="field"><label for="walkPriority">Prioridade administrativa</label><select id="walkPriority"><option value="">Selecionar</option><option>Normal</option><option>Prioritário</option></select></div>
+        <div class="field"><label for="walkStatus">Estado</label><select id="walkStatus"><option value="">Selecionar</option><option>A aguardar</option><option>Em atendimento</option><option>Concluído</option></select></div>
+        <div class="field full"><label for="walkNotes">Observações</label><textarea id="walkNotes" placeholder="Preencher"></textarea></div>
+      </div><br><button class="btn" id="addWalkin">Adicionar à lista</button></div>
+      <div class="panel"><h2>Lista de Walk-ins</h2><div class="table-scroll"><table><thead><tr><th>Hora</th><th>Nome</th><th>Telefone</th><th>Motivo</th><th>Prioridade</th><th>Estado</th><th>Ação</th></tr></thead><tbody id="walkinList"></tbody></table></div></div>
+    </section>
+    <section id="messages" class="page">
+      <h1>Mensagens</h1><div class="sub">Comunicações administrativas fictícias</div>
+      <div class="panel"><div class="notice">Não introduza dados clínicos ou informações pessoais reais neste protótipo.</div><div class="table-scroll"><table><thead><tr><th>De</th><th>Assunto</th><th>Hora</th><th>Estado</th></tr></thead><tbody><tr><td colspan="4" class="empty">Nenhuma mensagem registada.</td></tr></tbody></table></div></div>
+      <div class="panel"><h2>Nova mensagem</h2><div class="field"><label for="messageRecipient">Destinatário</label><input id="messageRecipient" placeholder="Nome fictício"></div><br><div class="field"><label for="messageText">Mensagem</label><textarea id="messageText" placeholder="Escreva uma mensagem administrativa..."></textarea></div><br><button class="btn" id="sendMessage">Enviar</button></div>
+    </section>
+    <section id="doctors" class="page">
+      <h1>Médicos</h1><div class="sub">Adicionar e gerir profissionais</div>
+      <div class="panel"><h2>Adicionar médico</h2><div class="form">
+        <div class="field"><label for="doctorName">Nome</label><input id="doctorName" placeholder="Ex.: Dr. João Silva"></div>
+        <div class="field"><label for="doctorSpecialty">Especialidade</label><input id="doctorSpecialty" placeholder="Ex.: Medicina Geral"></div>
+        <div class="field"><label for="doctorPhone">Telefone</label><input id="doctorPhone" placeholder="+352 000 000 000"></div>
+        <div class="field"><label for="doctorEmail">Email</label><input id="doctorEmail" placeholder="exemplo@clinica.pt"></div>
+      </div><br><button class="btn" id="addDoctor">Adicionar médico</button></div>
+      <div class="panel"><h2>Médicos registados</h2><div id="doctorList"></div></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

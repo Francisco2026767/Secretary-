@@ -8,9 +8,6 @@ services:
     volumes:
       - .:/app
       - node_modules:/app/node_modules
-    depends_on:
-      api:
-        condition: service_healthy
     environment:
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS:
     command: ["sh", "-ec", "npm ci --no-audit --no-fund && exec npm run dev"]
@@ -19,22 +16,6 @@ services:
       interval: 15s
       timeout: 5s
       start_period: 60s
-      retries: 3
-  api:
-    image: node:22-bookworm-slim
-    working_dir: /app
-    restart: on-failure
-    volumes:
-      - .:/app
-    env_file:
-      - path: /run/base44/app.env
-        required: false
-    command: ["node", "--watch", "server.js"]
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8000/api/config').then(r=>{if(!r.ok)throw Error('Message service unavailable')}).catch(e=>{console.error(e);process.exit(1)})"]
-      interval: 15s
-      timeout: 5s
-      start_period: 10s
       retries: 3
 volumes:
   node_modules:

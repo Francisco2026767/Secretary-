@@ -15,7 +15,7 @@
     <a href="#patients" class="nav" data-page="patients" aria-label="Pacientes">👥 <span>Pacientes</span></a>
     <a href="#appointments" class="nav" data-page="appointments" aria-label="Marcar consulta">➕ <span>Marcar consulta</span></a>
     <a href="#walkins" class="nav" data-page="walkins" aria-label="Walk-in">🚶 <span>Walk-in</span></a>
-    <a href="#messages" class="nav" data-page="messages" aria-label="Mensagens">✉️ <span>Mensagens</span></a>
+    <a href="#calls" class="nav" data-page="calls" aria-label="Chamadas">📞 <span>Chamadas</span></a>
     <a href="#doctors" class="nav" data-page="doctors" aria-label="Médicos">🩺 <span>Médicos</span></a>
   </aside>
   <main id="app">
@@ -29,7 +29,7 @@
       </div>
       <div class="grid">
         <div class="panel"><h2>Consultas de hoje</h2><div class="table-scroll"><table><thead><tr><th>Hora</th><th>Paciente</th><th>Telefone</th><th>Tipo</th><th>Médico</th><th>Estado</th><th>Ação</th></tr></thead><tbody id="todayAppointments"></tbody></table></div></div>
-        <div class="panel"><h2>Ações rápidas</h2><div class="actions"><button class="btn" data-show="appointments">Nova consulta</button><button class="btn secondary" data-show="patients">Pacientes</button><button class="btn secondary" data-show="doctors">Médicos</button></div><br><div class="notice">ℹ️ Ambiente de demonstração. Utilize apenas dados fictícios.</div></div>
+        <div class="panel"><h2>Ações rápidas</h2><div class="actions"><button class="btn" data-show="appointments">Nova consulta</button><button class="btn secondary" data-show="patients">Pacientes</button><button class="btn secondary" data-show="doctors">Médicos</button><button class="btn secondary" data-show="calls">📞 Chamadas</button></div><br><div class="notice">ℹ️ Ambiente de demonstração. Utilize apenas dados fictícios.</div></div>
       </div>
     </section>
     <section id="agenda" class="page">
@@ -66,10 +66,10 @@
       </div><br><button class="btn" id="addWalkin">Adicionar à lista</button></div>
       <div class="panel"><h2>Lista de Walk-ins</h2><div class="table-scroll"><table><thead><tr><th>Hora</th><th>Nome</th><th>Telefone</th><th>Motivo</th><th>Prioridade</th><th>Estado</th><th>Ação</th></tr></thead><tbody id="walkinList"></tbody></table></div></div>
     </section>
-    <section id="messages" class="page">
-      <h1>Mensagens</h1><div class="sub">Respostas automáticas do assistente IA</div>
-      <div class="panel"><div class="notice">Utiliza apenas dados fictícios. Ao enviar, o destinatário e o texto são enviados ao serviço OpenAI para gerar uma resposta. Os perfis e antecedentes não são enviados. Não é enviado email ou SMS: a resposta é do assistente IA, não da pessoa indicada.</div><p class="small" id="aiStatus">A verificar configuração…</p><div id="messageList" aria-live="polite"></div></div>
-      <div class="panel"><h2>Nova mensagem</h2><div class="field"><label for="messageRecipient">Destinatário</label><input id="messageRecipient" maxlength="150" placeholder="Nome fictício"></div><br><div class="field"><label for="messageText">Mensagem</label><textarea id="messageText" maxlength="4000" placeholder="Escreva uma mensagem administrativa fictícia..."></textarea></div><br><button class="btn" id="sendMessage">Enviar e receber resposta</button><p id="messageError" class="message-error" role="alert"></p></div>
+    <section id="calls" class="page">
+      <h1>Chamadas</h1><div class="sub">Ligar a pacientes e médicos diretamente</div>
+      <div class="panel"><h2>Contactos disponíveis</h2><div id="callList"></div></div>
+      <div class="panel"><h2>Histórico de chamadas</h2><div id="callLog"></div></div>
     </section>
     <section id="doctors" class="page">
       <h1>Médicos</h1><div class="sub">Adicionar e gerir profissionais</div>

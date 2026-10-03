@@ -1,7 +1,7 @@
 import { createHistoryForm } from './patient-history.js';
 import { openPatientProfile, openDoctorProfile } from './profiles.js';
 import { setupAgenda } from './agenda.js';
-import { setupMessages } from './messages.js';
+import { setupCalls } from './calls.js';
 
 const $ = id => document.getElementById(id);
 let refreshAgenda;
@@ -54,7 +54,9 @@ function renderDoctors() {
     div.innerHTML = `<button class="doctor-info profile-link" aria-label="Ver perfil de ${escapeHtml(doctor.name)}"><strong>${escapeHtml(doctor.name)}</strong>
       <div class="small">${escapeHtml(doctor.specialty || 'Especialidade não indicada')}</div>
       <div class="small">${escapeHtml(doctor.phone || 'Sem telefone')}${doctor.email ? ' · ' + escapeHtml(doctor.email) : ''}</div></button>
-      <button class="btn danger">Excluir</button>`;
+      <a class="btn secondary call-btn">Ligar</a><button class="btn danger">Excluir</button>`;
+    if (doctor.phone) div.querySelector('.call-btn').href = `tel:${doctor.phone.replace(/\s/g, '')}`;
+    div.querySelector('.call-btn').addEventListener('click', () => calls.makeCall(doctor.name, doctor.phone));
     div.querySelector('.profile-link').addEventListener('click', () => openDoctorProfile(doctor, appointments));
     div.querySelector('.danger').addEventListener('click', () => {
       if (!confirm('Tem a certeza que deseja excluir este médico?')) return;
@@ -99,7 +101,9 @@ function renderPatients() {
     div.className = 'patient';
     div.innerHTML = `<button class="patient-info profile-link" aria-label="Ver perfil de ${escapeHtml(patient.name)}"><span class="avatar">${escapeHtml(patient.name.charAt(0).toUpperCase())}</span>
       <span><strong>${escapeHtml(patient.name)}</strong><span class="small" style="display:block">📞 ${escapeHtml(patient.phone || 'Sem telefone')}</span></span></button>
-      <button class="btn danger">Excluir</button>`;
+      <a class="btn secondary call-btn">Ligar</a><button class="btn danger">Excluir</button>`;
+    if (patient.phone) div.querySelector('.call-btn').href = `tel:${patient.phone.replace(/\s/g, '')}`;
+    div.querySelector('.call-btn').addEventListener('click', () => calls.makeCall(patient.name, patient.phone));
     div.querySelector('.profile-link').addEventListener('click', () => openPatientProfile(patient, appointments, walkins));
     div.querySelector('.danger').addEventListener('click', () => {
       if (!confirm('Tem a certeza que deseja excluir este paciente?')) return;
@@ -141,8 +145,10 @@ function renderAppointments() {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${escapeHtml(a.time)}</td><td><strong>${escapeHtml(a.name)}</strong></td><td>${escapeHtml(a.phone || '—')}</td>
       <td>${escapeHtml(a.type)}</td><td>${escapeHtml(a.doctor)}</td><td><span class="status">${escapeHtml(a.status)}</span></td>
-      <td><button class="btn danger">Excluir</button></td>`;
-    tr.querySelector('button').addEventListener('click', () => {
+      <td class="call-actions"><a class="btn secondary call-link">Ligar</a> <button class="btn danger">Excluir</button></td>`;
+    if (a.phone) tr.querySelector('.call-link').href = `tel:${a.phone.replace(/\s/g, '')}`;
+    tr.querySelector('.call-link').addEventListener('click', () => calls.makeCall(a.name, a.phone));
+    tr.querySelector('.danger').addEventListener('click', () => {
       if (!confirm('Tem a certeza que deseja excluir esta marcação?')) return;
       appointments = appointments.filter(item => item.id !== a.id);
       save(); renderAppointments(); updateDashboard(); toast('Marcação excluída.');
@@ -169,8 +175,10 @@ function renderWalkins() {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${escapeHtml(w.time)}</td><td>${escapeHtml(w.name)}</td><td>${escapeHtml(w.phone || '—')}</td>
       <td>${escapeHtml(w.reason)}</td><td>${escapeHtml(w.priority)}</td><td>${escapeHtml(w.status)}</td>
-      <td><button class="btn danger">Excluir</button></td>`;
-    tr.querySelector('button').addEventListener('click', () => {
+      <td class="call-actions"><a class="btn secondary call-link">Ligar</a> <button class="btn danger">Excluir</button></td>`;
+    if (w.phone) tr.querySelector('.call-link').href = `tel:${w.phone.replace(/\s/g, '')}`;
+    tr.querySelector('.call-link').addEventListener('click', () => calls.makeCall(w.name, w.phone));
+    tr.querySelector('.danger').addEventListener('click', () => {
       if (!confirm('Excluir este walk-in?')) return;
       walkins = walkins.filter(item => item.id !== w.id);
       save(); renderWalkins(); updateDashboard(); toast('Walk-in excluído.');
@@ -185,5 +193,5 @@ function updateDashboard() {
   $('countPatients').textContent = patients.length;
 }
 refreshAgenda = setupAgenda(() => appointments);
-setupMessages(toast);
+const calls = setupCalls(() => patients, () => doctors);
 renderDoctors(); renderPatients(); renderAppointments(); renderWalkins(); updateDashboard();

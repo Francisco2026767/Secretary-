@@ -27,6 +27,16 @@
         <div class="card"><div class="label">Walk-ins</div><div class="metric" id="countWalkins">0</div></div>
         <div class="card"><div class="label">Pacientes</div><div class="metric" id="countPatients">0</div></div>
       </div>
+      <div class="panel clinic-contact-card">
+        <h2>📞 Ligar à clínica</h2>
+        <div class="clinic-contact-body">
+          <div class="clinic-contact-info">
+            <label for="clinicPhone" class="small">Número de telefone da clínica</label>
+            <input id="clinicPhone" type="tel" placeholder="+351 000 000 000">
+          </div>
+          <a id="clinicCallBtn" class="btn clinic-call-btn">Ligar agora</a>
+        </div>
+      </div>
       <div class="grid">
         <div class="panel"><h2>Consultas de hoje</h2><div class="table-scroll"><table><thead><tr><th>Hora</th><th>Paciente</th><th>Telefone</th><th>Tipo</th><th>Médico</th><th>Estado</th><th>Ação</th></tr></thead><tbody id="todayAppointments"></tbody></table></div></div>
         <div class="panel"><h2>Ações rápidas</h2><div class="actions"><button class="btn" data-show="appointments">Nova consulta</button><button class="btn secondary" data-show="patients">Pacientes</button><button class="btn secondary" data-show="doctors">Médicos</button><button class="btn secondary" data-show="calls">📞 Chamadas</button></div><br><div class="notice">ℹ️ Ambiente de demonstração. Utilize apenas dados fictícios.</div></div>

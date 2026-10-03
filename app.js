@@ -192,6 +192,20 @@ function updateDashboard() {
   $('countWalkins').textContent = walkins.length;
   $('countPatients').textContent = patients.length;
 }
+/* — Contacto da clínica (número para receber chamadas) — */
+const clinicPhoneInput = $('clinicPhone');
+const clinicCallBtn = $('clinicCallBtn');
+clinicPhoneInput.value = localStorage.getItem('clinicPhone') || '';
+clinicCallBtn.addEventListener('click', () => {
+  const phone = clinicPhoneInput.value.trim();
+  if (!phone) return toast('Introduza o número da clínica.');
+  window.location.href = `tel:${phone.replace(/\s/g, '')}`;
+});
+clinicPhoneInput.addEventListener('change', () => {
+  localStorage.setItem('clinicPhone', clinicPhoneInput.value.trim());
+  toast('Número da clínica guardado.');
+});
+
 refreshAgenda = setupAgenda(() => appointments);
 const calls = setupCalls(() => patients, () => doctors);
 renderDoctors(); renderPatients(); renderAppointments(); renderWalkins(); updateDashboard();
